@@ -111,7 +111,7 @@ function PopoverContent({
     updatePosition()
     window.addEventListener("resize", updatePosition)
     return () => window.removeEventListener("resize", updatePosition)
-  }, [open, align, sideOffset])
+  }, [open, align, sideOffset, triggerRef])
 
   React.useEffect(() => {
     if (!open) return
@@ -140,7 +140,7 @@ function PopoverContent({
       document.removeEventListener("mousedown", handleClickOutside)
       document.removeEventListener("keydown", handleEscape)
     }
-  }, [open, setOpen])
+  }, [open, setOpen, triggerRef])
 
   if (!open) return null
 
