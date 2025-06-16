@@ -1,5 +1,6 @@
 import { fetchExperienceById, TurneoExperience } from '@/lib/turneo-api';
 import ExperienceDetailsClient from "./ExperienceDetailsClient";
+import { Metadata } from 'next';
 
 interface ExperienceDetailsPageProps {
   params: Promise<{ id: string }>;
@@ -7,6 +8,22 @@ interface ExperienceDetailsPageProps {
 
 function isTurneoExperience(obj: unknown): obj is TurneoExperience {
   return obj !== null && typeof obj === 'object' && 'id' in obj && 'name' in obj;
+}
+
+export async function generateMetadata({ params }: ExperienceDetailsPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const experience = await fetchExperienceById(id);
+  
+  if (!isTurneoExperience(experience)) {
+    return {
+      title: 'Experience Not Found - Turneo Experiences',
+    };
+  }
+  
+  return {
+    title: `${experience.name} - Turneo Experiences`,
+    description: experience.description || `Book ${experience.name} with Turneo`,
+  };
 }
 
 export default async function ExperienceDetailsPage({ params }: ExperienceDetailsPageProps) {

@@ -1,5 +1,6 @@
 import { fetchOrderById, TurneoOrderResponse } from '@/lib/turneo-api';
 import OrderDetailsClient from './OrderDetailsClient';
+import { Metadata } from 'next';
 
 interface OrderDetailsPageProps {
   params: Promise<{ id: string }>;
@@ -7,6 +8,22 @@ interface OrderDetailsPageProps {
 
 function isTurneoOrderResponse(obj: unknown): obj is TurneoOrderResponse {
   return obj !== null && typeof obj === 'object' && 'id' in obj && 'status' in obj;
+}
+
+export async function generateMetadata({ params }: OrderDetailsPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const order = await fetchOrderById(id);
+  
+  if (!isTurneoOrderResponse(order)) {
+    return {
+      title: 'Order Not Found - Turneo Experiences',
+    };
+  }
+  
+  return {
+    title: `Order ${order.id} - Turneo Experiences`,
+    description: `Order details for order ${order.id}`,
+  };
 }
 
 export default async function OrderDetailsPage({ params }: OrderDetailsPageProps) {
